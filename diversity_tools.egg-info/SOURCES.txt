@@ -1,0 +1,5 @@
+setup.py
+diversity_tools.egg-info/PKG-INFO
+diversity_tools.egg-info/SOURCES.txt
+diversity_tools.egg-info/dependency_links.txt
+diversity_tools.egg-info/top_level.txt
