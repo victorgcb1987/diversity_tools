@@ -1,0 +1,25 @@
+import unittest
+
+from pathlib import Path
+
+from src.kmers import run_meryl, count_meryl_kmers
+
+
+class TestKmers(unittest.TestCase):
+    def setUp(self):
+        self.test_path = Path(__file__).parent.absolute() / "test_data"
+        self.counts_fpath = self.test_path / "counts"
+
+    def test_run_meryl(self):
+        sequences_fpath = self.test_path / "sequences_to_kmer.fa"
+        meryl_results = run_meryl(sequences_fpath, self.counts_fpath, threads=1, kmer_size=2)
+        assert meryl_results["return_code"] == 0
+
+    def test_count_kmers(self):
+        kmers = count_meryl_kmers(self.counts_fpath)
+        assert kmers["AG"] == 1
+        assert kmers["GC"] == 1
+        assert kmers["CT"] == 1
+
+
+    
