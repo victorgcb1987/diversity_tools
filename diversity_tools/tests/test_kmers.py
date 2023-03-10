@@ -1,8 +1,8 @@
-import shutil
 import unittest
 
 from pathlib import Path
 from shutil import rmtree as remove_folder
+from time import sleep
 
 from src.kmers import run_meryl, count_meryl_kmers
 
@@ -21,6 +21,7 @@ class TestKmers(unittest.TestCase):
         assert meryl_results["return_code"] == 0
 
     def test_count_kmers(self):
+        sleep(5)
         kmers = count_meryl_kmers(self.counts_fpath)
         assert kmers["AGC"] == 1
         assert kmers["CTC"] == 1
