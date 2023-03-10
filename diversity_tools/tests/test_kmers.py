@@ -11,8 +11,8 @@ class TestKmers(unittest.TestCase):
         self.test_path = Path(__file__).parent.absolute() / "test_data"
         self.counts_fpath = self.test_path / "counts"
 
-    # def tearDown(self):
-    #     shutil.rmtree(self.counts_fpath)
+    def tearDown(self):
+        self.counts_fpath.unlink()
 
     def test_run_meryl(self):
         sequences_fpath = self.test_path / "sequences_to_kmer.fa"

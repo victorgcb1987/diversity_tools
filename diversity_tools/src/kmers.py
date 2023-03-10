@@ -22,11 +22,12 @@ def count_meryl_kmers(out_fdir, num_mismatches=3):
     results = {"output_fdir": out_fdir,
                "return_code": count_meryl_run.returncode,
                "log_messages": count_meryl_run.stderr.decode()}
-    kmers = count_meryl_run.stdout.decode()
+    kmers = count_meryl_run.stdout.decode().split("\n")
     kmer_occurrency = {}
     for line in kmers:
-        line = line.split()
-        kmer = line[0]
-        num_occurrences = int(line[1])
-        kmer_occurrency[kmer] = num_occurrences
+        if line:
+            line = line.split("\t")
+            kmer = line[0]
+            num_occurrences = int(line[1])
+            kmer_occurrency[kmer] = num_occurrences
     return kmer_occurrency
