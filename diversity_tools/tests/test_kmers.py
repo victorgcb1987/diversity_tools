@@ -9,11 +9,9 @@ from src.kmers import run_meryl, count_meryl_kmers
 
 class TestKmers(unittest.TestCase):
     def setUp(self):
+        sleep(5)
         self.test_path = Path(__file__).parent.absolute() / "test_data"
         self.counts_fpath = self.test_path / "counts"
-
-    # def tearDown(self):
-    #     remove_folder(self.counts_fpath)
 
     def test_run_meryl(self):
         sequences_fpath = self.test_path / "sequences_to_kmer.fa"
@@ -21,10 +19,10 @@ class TestKmers(unittest.TestCase):
         assert meryl_results["return_code"] == 0
 
     def test_count_kmers(self):
-        sleep(5)
         kmers = count_meryl_kmers(self.counts_fpath)
         assert kmers["AGC"] == 1
         assert kmers["CTC"] == 1
+        remove_folder(self.counts_fpath)
 
 
     
