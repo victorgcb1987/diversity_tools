@@ -2,6 +2,7 @@ import shutil
 import unittest
 
 from pathlib import Path
+from shutil import rmtree as remove_folder
 
 from src.kmers import run_meryl, count_meryl_kmers
 
@@ -12,7 +13,7 @@ class TestKmers(unittest.TestCase):
         self.counts_fpath = self.test_path / "counts"
 
     def tearDown(self):
-        self.counts_fpath.unlink()
+        remove_folder(self.counts_fpath)
 
     def test_run_meryl(self):
         sequences_fpath = self.test_path / "sequences_to_kmer.fa"
