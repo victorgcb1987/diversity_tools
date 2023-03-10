@@ -7,7 +7,7 @@ def run_meryl(sequences_fpath, out_fdir, threads=1, kmer_size=21):
     meryl_executable = get_executables(exec_reqs["meryl"])
     cmd = [meryl_executable, "count", "k={}".format(kmer_size), 
            str(sequences_fpath), "threads={}".format(threads), 
-           "output", str(out_fdir)]
+           "output", str(out_fdir)+"/"]
     print(" ".join(cmd))
     meryl_run = run(" ".join(cmd), shell=True, capture_output=True)
     results = {"output_fdir": out_fdir,
