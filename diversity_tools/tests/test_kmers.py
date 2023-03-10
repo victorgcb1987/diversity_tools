@@ -9,16 +9,16 @@ from src.kmers import run_meryl, count_meryl_kmers
 
 class TestKmers(unittest.TestCase):
     def setUp(self):
-        sleep(10)
         self.test_path = Path(__file__).parent.absolute() / "test_data"
         self.counts_fpath = self.test_path / "counts"
 
-    def test_run_meryl(self):
+    def test01_run_meryl(self):
         sequences_fpath = self.test_path / "sequences_to_kmer.fa"
         meryl_results = run_meryl(sequences_fpath, self.counts_fpath, threads=1, kmer_size=3)
         assert meryl_results["return_code"] == 0
+        sleep(20)
 
-    def test_count_kmers(self):
+    def test02_count_kmers(self):
         kmers = count_meryl_kmers(self.counts_fpath)
         assert kmers["AGC"] == 1
         assert kmers["CTC"] == 1
