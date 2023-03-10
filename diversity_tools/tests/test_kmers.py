@@ -16,7 +16,6 @@ class TestKmers(unittest.TestCase):
         sequences_fpath = self.test_path / "sequences_to_kmer.fa"
         meryl_results = run_meryl(sequences_fpath, self.counts_fpath, threads=1, kmer_size=3)
         assert meryl_results["return_code"] == 0
-        sleep(20)
 
     def test02_count_kmers(self):
         kmers = count_meryl_kmers(self.counts_fpath)
