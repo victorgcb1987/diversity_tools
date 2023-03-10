@@ -9,7 +9,7 @@ from src.kmers import run_meryl, count_meryl_kmers
 
 class TestKmers(unittest.TestCase):
     def setUp(self):
-        sleep(5)
+        sleep(10)
         self.test_path = Path(__file__).parent.absolute() / "test_data"
         self.counts_fpath = self.test_path / "counts"
 
