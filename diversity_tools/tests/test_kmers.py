@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 from shutil import rmtree as remove_folder
 
-from src.kmers import run_meryl, count_meryl_kmers
+from src.kmers import run_meryl, count_meryl_kmers, group_kmers
 
 
 class TestKmers(unittest.TestCase):
@@ -21,3 +21,10 @@ class TestKmers(unittest.TestCase):
         assert kmers["AGC"] == 1
         assert kmers["CTC"] == 1
         remove_folder(self.counts_fpath)
+
+    
+    # def test_03_group_kmers(self):
+    #     kmers = {"sp1": {"AAAAA": 1, "AAAAT": 1, "ATCAA": 1},
+    #              "sp2": {"AAAAA": 2, "AAAAT": 1, "GACTT": 1}}
+    #     grouped_kmers = group_kmers(kmers)
+    #     assert group_kmers[""]
