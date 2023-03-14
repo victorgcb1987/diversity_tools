@@ -27,7 +27,6 @@ class  TestReaders(unittest.TestCase):
         write_file_from_matrix(family_matrix, fpath)
         with open(fpath) as fhand:
             for line in csv.DictReader(fhand):
-                print(line)
                 assert line == {'#ID':'CL0001', 'SP1': '2', 'SP2': '3', 'SP3': '1', 'SP4': '0', 'SP5': '0'}
                 assert line["#ID"] == "CL0001"
                 assert int(line["SP1"]) == 2
