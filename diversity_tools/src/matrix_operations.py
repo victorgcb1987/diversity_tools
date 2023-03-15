@@ -15,14 +15,13 @@ def convert_into_dataframe(gene_families):
     df = pd.DataFrame(gene_families)
     df = df.fillna(value=0)
     df = df.astype(int)
-    print(df)
     #df = df.T
     return df
 
 def calculate_shannon_diversity_index(df_matrix):
-    g_sum = df_matrix.groupby('Family')['Frecuency'].transform('sum')
-    values = df_matrix['Frecuency']/g_sum
-    df_matrix['Diversity'] = -(values*np.log(values))
-
-    df1 = df_matrix.groupby('Family',as_index=False,sort=False)['Diversity'].sum()
-    print(df1)
+    cols = list(df_matrix.columns)
+    df_frequencies = pd.DataFrame(df_matrix[cols].div(df_matrix[cols].sum(axis=0), axis=1))
+    df_diversity = pd.DataFrame(df_frequencies[cols].transform(lambda x: -(x*np.log(x))))
+    df_shannon = df_diversity.sum(axis=0)
+    return df_shannon
+    
