@@ -8,7 +8,6 @@ def run_meryl(sequences_fpath, out_fdir, threads=1, kmer_size=21):
     cmd = [meryl_executable, "count", "k={}".format(kmer_size), 
            str(sequences_fpath), "threads={}".format(threads), 
            "output", str(out_fdir)+"/"]
-    print(" ".join(cmd))
     meryl_run = run(" ".join(cmd), shell=True, capture_output=True)
     results = {"output_fdir": out_fdir,
                "return_code": meryl_run.returncode,
@@ -31,3 +30,11 @@ def count_meryl_kmers(out_fdir):
             num_occurrences = int(line[1])
             kmer_occurrency[kmer] = num_occurrences
     return kmer_occurrency
+
+def group_kmers_by_species(kmers, sps_names, kmers_pool=[]):
+    grouped_kmers_by_species = {sp_name: {} for sp_name in sps_names}
+    kmers_pool += set().union(*(d.keys() for d in kmers)) 
+    for kmers, sp_name in zip(kmers, sps_names):
+        grouped_kmers_by_species[sp_name] = {kmer: kmers.get(kmer, 0) for kmer in kmers_pool}
+    return grouped_kmers_by_species
+    

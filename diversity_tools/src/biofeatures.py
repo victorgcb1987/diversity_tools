@@ -5,7 +5,7 @@ from subprocess import run
 
 
 def extract_biofeatures(gff_fpath, genome_fpath, out_fpath, kind=None):
-    if kind is None:
+    if kind is None or kind not in ["TE", "gene", "intron"]:
         msg = "Feature not recognised. Available features: TE, gene, intron"
         raise ValueError(msg)
     elif kind == "TE":
@@ -72,8 +72,9 @@ def get_intergeninc_regions(gff_fpath, genome_fpath, chromsizes_fpath, out_fpath
 
 def write_gene_sequences(gff_fpath, genome_fpath, out_fpath):
     gffread_executable = get_executables(exec_reqs["gffread"])
-    out_fpath = out_fpath / "{}.genes.fa".format(out_fpath.parent)
+    out_fpath = out_fpath / "{}.genes.fa".format(genome_fpath.stem)
     cmd = [gffread_executable, "-g", str(genome_fpath), "-w", str(out_fpath), str(gff_fpath)]
+    print(" ".join(cmd))    
     run_gffread = run(" ".join(cmd), shell=True, capture_output=True)
     results = store_results(out_fpath, run_gffread)
     check_results("gffread, extracting genes", results)   
