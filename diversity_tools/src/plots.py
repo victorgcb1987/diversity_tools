@@ -1,10 +1,7 @@
 from matplotlib_venn import venn2, venn3
 
-import matplotlib as mpl
 import matplotlib.pyplot as plt
-
 import seaborn as sns
-import seaborn.objects as so
 
 from src.kmers import get_kmer_sets
 
@@ -21,10 +18,10 @@ def venn_diagram_of_kmers(grouped_kmers, percentages=True):
     elif len(groups) == 3:
         return venn3(sets, set(groups)), sets, groups
     
-    
-def convert_diversity_matrix_to_graph(diversity_matrix):
-    ds_diversity = sns.load_dataset(diversity_matrix)
-    gp_diversity = sns.catplot(data=ds_diversity, kind="bar", x="Family", y="Diversity")
-    plot = gp_diversity.get_figure()
-    plot.savefig("Diversity_plot.png")
-    return gp_diversity
+
+def convert_diversity_matrix_to_graph(diversity_matrix, out_fpath):
+    diversity_matrix = diversity_matrix.to_frame()
+    diversity_matrix["Families"] = diversity_matrix.index
+    diversity_matrix = diversity_matrix.rename(columns={0: "Diversity"})
+    sns.barplot(x="Families", y="Diversity", data=diversity_matrix)
+    plt.savefig(out_fpath)
