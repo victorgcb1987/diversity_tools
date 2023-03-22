@@ -45,10 +45,12 @@ class  TestReaders(unittest.TestCase):
     def test_calculate_shannon_index(self):
         example_matrix = {"Community1" : {"black": 12, "purple": 21, "striped": 5,
                                           "green": 25, "brown": 2, "lblue": 17,
-                                          "sblue": 9}}
+                                          "sblue": 9}, 
+                          "Community2" : {"black": 10, "purple": 0, "striped": 15,
+                                          "green": 15, "brown": 2, "lblue": 30,
+                                          "sblue": 0}}
+        #Dos comunidades mas con diferentes diversidad
         df = pd.DataFrame(example_matrix)
         example_diversity_df = calculate_shannon_diversity_index(df)
         assert round(example_diversity_df['Community1'], 3) == 1.746
-
-
-        
+        assert round(example_diversity_df['Community2'], 3) == 1.392
