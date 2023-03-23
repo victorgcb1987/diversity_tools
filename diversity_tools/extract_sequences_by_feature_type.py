@@ -27,7 +27,7 @@ def parse_arguments():
     help_out_fdir = "Output folder"
     parser.add_argument("--out" ,
                         "-o", type=str,
-                        help=help_kind,
+                        help=help_out_fdir,
                         required=True)
     return parser
 
