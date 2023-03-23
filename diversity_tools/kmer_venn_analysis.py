@@ -84,17 +84,25 @@ def write_kmers_intersection_results(sets, kmers_results, groups, output_fhand):
         output_fhand.write("\t".join(occurrencies)+"\n")
         output_fhand.flush()
 
+def write_unique_kmers(group, name, occurencies, output_fhand):
+    header = "#Kmer\t{}\n".format(name)
+    output_fhand.write(header)
+    for kmer in group:
+        occurrency = occurencies[kmer]
+        output_fhand.write("{}\t{}\n".format(kmer, occurrency))
+        output_fhand.flush()
 
 def main():
     options = get_options()
     output_fdir = Path(options["output_fpath"])
+    if not output_fdir.exists():
+        output_fdir.mkdir()
     kmers_results = []
     for kmer_fpath in options["sets"]:
         with open(Path(kmer_fpath)) as kmer_fhand:
             kmers_results.append(read_kmers_from_text_file(kmer_fhand))
     grouped_kmers = group_kmers_by_species(kmers_results, options["sets_names"])
     _, sets, groups = venn_diagram_of_kmers(grouped_kmers, percentages=True)
-    print(sets)
     plt.title(options["plot_title"])
     plt.savefig(output_fdir / "venn_plot.svg")
     shared_fpath = output_fdir / "kmers_shared_by_all.tsv"
@@ -103,9 +111,13 @@ def main():
     
     uniques = get_unique_kmers_for_group(sets)
     unique_and_names = zip(uniques, groups)
+    position = 0
     for group in unique_and_names:
+        print(group)
         unique_fpath = output_fdir / "unique_kmers_for_{}.tsv".format(group[1])
-        with open(unique_fpath, "w") as unique
+        with open(unique_fpath, "w") as unique_fhand:
+            write_unique_kmers(group[0], group[1], kmers_results[position], unique_fhand)
+            position +=1
 
     
 
