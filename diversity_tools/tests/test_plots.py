@@ -14,10 +14,10 @@ class  TestReaders(unittest.TestCase):
         self.test_path = Path(__file__).parent.absolute() / "test_data"
 
     def tearDown(self):
-        remove_file(self.test_path/ "Families_Diversity_plot")
+        remove_file(self.test_path/ "Families_Diversity_plot.svg")
 
     def test_seaborn(self):
-        fpath = self.test_path / "Families_Diversity_plot"
+        fpath = self.test_path / "Families_Diversity_plot.svg"
         example_matrix = {"Community1" : {"black": 12, "purple": 21, "striped": 5,
                                           "green": 25, "brown": 2, "lblue": 17,
                                           "sblue": 9}, 
@@ -27,4 +27,3 @@ class  TestReaders(unittest.TestCase):
         df = pd.DataFrame(example_matrix)
         example_diversity_df = calculate_shannon_diversity_index(df)
         convert_diversity_matrix_to_graph(example_diversity_df, fpath)
-        #añadir fhand en svg y teardown 
