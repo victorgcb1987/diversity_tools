@@ -6,7 +6,8 @@ from pathlib import Path
 from src.matrix_operations import (convert_list_to_numbers, convert_into_dataframe, 
                                    calculate_shannon_diversity_index, get_dataframe_with_limited_families, 
                                    filter_dataframe_cols_by_value_occurrence, 
-                                   select_families_with_highest_number_of_genes, filter_dataframe_cols_by_existance)                            
+                                   select_families_with_highest_number_of_genes, filter_dataframe_by_cols_name,
+                                   filter_dataframe_by_rows_name)                            
 
 class  TestReaders(unittest.TestCase):
 
@@ -73,7 +74,7 @@ class  TestReaders(unittest.TestCase):
         assert round(example_diversity_df['Community1'], 3) == 1.746
         assert round(example_diversity_df['Community2'], 3) == 1.392
 
-    def test_select_families_with_x_genes_from_dataframe(self):
+    def test_filter_dataframe_cols_by_value_occurrence(self):
         families_matrix = {"CL0001": {"SP1": 2, 
                                       "SP2": 3, 
                                       "SP3": 2},
@@ -85,7 +86,7 @@ class  TestReaders(unittest.TestCase):
                             "CL0003": {"SP1": 1, 
                                        "SP2": 2}}
         df = convert_into_dataframe(families_matrix)
-        df = filter_dataframe_cols_by_value_occurrence(df, value=2, ignore_zeros=True, threshold=0.4, values_above=True)
+        df = filter_dataframe_cols_by_value_occurrence(df, value= 2,ignore_zeros=True, threshold=0.2, mode="equal")
 
     def test_families_with_higher_number_of_genes(self):
         families_matrix = {"CL0001": {"SP1": 3, 
@@ -99,9 +100,9 @@ class  TestReaders(unittest.TestCase):
                             "CL0003": {"SP1": 1, 
                                        "SP2": 2}}
         df = convert_into_dataframe(families_matrix)
-        df = select_families_with_highest_number_of_genes(df, 2)
+        df = select_families_with_highest_number_of_genes(df, 1)
 
-    def test_filter_dataframe_cols_by_existance(self):
+    def test_filter_dataframe_by_cols_name(self):
         families_matrix = {"CL0001": {"SP1": 3, 
                                       "SP2": 1, 
                                       "SP3": 3},
@@ -113,4 +114,20 @@ class  TestReaders(unittest.TestCase):
                             "CL0003": {"SP1": 1, 
                                        "SP2": 2}}
         df = convert_into_dataframe(families_matrix)
-        df = filter_dataframe_cols_by_existance(df)
+        column_list = ["CL0001","CL0003"]
+        df = filter_dataframe_by_cols_name(df, column_list, keep_columns=False)
+    
+    def test_filter_dataframe_by_rows_name(self):
+        families_matrix = {"CL0001": {"SP1": 3, 
+                                      "SP2": 1, 
+                                      "SP3": 3},
+                            "CL0002": {"SP1": 3, 
+                                       "SP2": 2, 
+                                       "SP3": 2, 
+                                       "SP4": 2, 
+                                       "SP5": 2},
+                            "CL0003": {"SP1": 1, 
+                                       "SP2": 2}}
+        df = convert_into_dataframe(families_matrix)
+        row_list = ["SP1", "SP2"]
+        df = filter_dataframe_by_rows_name(df, row_list, keep_row=True)
