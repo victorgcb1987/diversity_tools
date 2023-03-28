@@ -3,7 +3,10 @@ import pandas as pd
 
 from pathlib import Path
 
-from src.matrix_operations import convert_list_to_numbers, convert_into_dataframe, calculate_shannon_diversity_index, convert_into_limited_dataframe, select_families_with_x_genes_from_dataframe                               
+from src.matrix_operations import (convert_list_to_numbers, convert_into_dataframe, 
+                                   calculate_shannon_diversity_index, get_dataframe_with_limited_families, 
+                                   filter_dataframe_cols_by_value_occurrence, 
+                                   select_families_with_highest_number_of_genes, filter_dataframe_cols_by_existance)                            
 
 class  TestReaders(unittest.TestCase):
 
@@ -42,7 +45,7 @@ class  TestReaders(unittest.TestCase):
     #    assert df.at["CL0001", "SP1"] == 2
     #    assert df.at["CL0002", "SP4"] == 1
 
-    def test_matrix_limited_dataframe(self):
+    def test_get_dataframe_with_limited_families(self):
         families_matrix = {"CL0001": {"SP1": 2, 
                                       "SP2": 3, 
                                       "SP3": 1},
@@ -53,7 +56,8 @@ class  TestReaders(unittest.TestCase):
                                        "SP5": 2},
                             "CL0003": {"SP1": 1, 
                                        "SP2": 2}}
-        df = convert_into_limited_dataframe(families_matrix, row_numbers= 2)
+        df = convert_into_dataframe(families_matrix)
+        df = get_dataframe_with_limited_families(df, family_number = 1)
 
     
     def test_calculate_shannon_index(self):
@@ -72,7 +76,7 @@ class  TestReaders(unittest.TestCase):
     def test_select_families_with_x_genes_from_dataframe(self):
         families_matrix = {"CL0001": {"SP1": 2, 
                                       "SP2": 3, 
-                                      "SP3": 1},
+                                      "SP3": 2},
                             "CL0002": {"SP1": 1, 
                                        "SP2": 2, 
                                        "SP3": 3, 
@@ -80,4 +84,33 @@ class  TestReaders(unittest.TestCase):
                                        "SP5": 2},
                             "CL0003": {"SP1": 1, 
                                        "SP2": 2}}
-        df = select_families_with_x_genes_from_dataframe(families_matrix, gene_number = 1)
+        df = convert_into_dataframe(families_matrix)
+        df = filter_dataframe_cols_by_value_occurrence(df, value=2, ignore_zeros=True, threshold=0.4, values_above=True)
+
+    def test_families_with_higher_number_of_genes(self):
+        families_matrix = {"CL0001": {"SP1": 3, 
+                                      "SP2": 1, 
+                                      "SP3": 3},
+                            "CL0002": {"SP1": 3, 
+                                       "SP2": 2, 
+                                       "SP3": 2, 
+                                       "SP4": 2, 
+                                       "SP5": 2},
+                            "CL0003": {"SP1": 1, 
+                                       "SP2": 2}}
+        df = convert_into_dataframe(families_matrix)
+        df = select_families_with_highest_number_of_genes(df, 2)
+
+    def test_filter_dataframe_cols_by_existance(self):
+        families_matrix = {"CL0001": {"SP1": 3, 
+                                      "SP2": 1, 
+                                      "SP3": 3},
+                            "CL0002": {"SP1": 3, 
+                                       "SP2": 2, 
+                                       "SP3": 2, 
+                                       "SP4": 2, 
+                                       "SP5": 2},
+                            "CL0003": {"SP1": 1, 
+                                       "SP2": 2}}
+        df = convert_into_dataframe(families_matrix)
+        df = filter_dataframe_cols_by_existance(df)

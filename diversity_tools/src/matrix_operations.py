@@ -18,9 +18,8 @@ def convert_into_dataframe(gene_families):
     #df = df.T
     return df
 
-def convert_into_limited_dataframe(gene_families, row_numbers = 10):
-    df = pd.DataFrame(gene_families)
-    limited_df = df.iloc[:row_numbers]
+def get_dataframe_with_limited_families(df, family_number = 3):
+    limited_df = df.iloc[:, :family_number]
     limited_df = limited_df.fillna(value=0)
     limited_df = limited_df.astype(int)
     return limited_df
@@ -32,8 +31,32 @@ def calculate_shannon_diversity_index(df_matrix):
     df_shannon = df_diversity.sum(axis=0)
     return df_shannon
 
-def select_families_with_x_genes_from_dataframe(df_matrix, gene_number = 1):
-     df = pd.DataFrame(df_matrix)
-     #df = df.loc[df == gene_number]
-     print(df)
-     return df
+def filter_dataframe_cols_by_value_occurrence(df_matrix, value=1, ignore_zeros=True, threshold=1, values_above=True):
+    df = df_matrix.fillna(value=0)
+    df = df.astype(int)
+    if ignore_zeros:
+        threshold_cutoff = threshold * (df != 0).sum()
+    else:
+        threshold_cutoff = threshold * df.sum()
+    if values_above:
+        df = df.loc[:, (df == value).sum() >= threshold_cutoff]
+    else:
+        df = df.loc[:, (df == value).sum() <= threshold_cutoff]
+    return df
+
+def select_families_with_highest_number_of_genes(df_matrix, num_values):
+    selected_df = df_matrix.apply(lambda x: x.nlargest(num_values))
+    selected_df = selected_df.fillna(value=0)
+    selected_df = selected_df.astype(int)
+    #print(selected_df)
+    return selected_df
+
+def filter_dataframe_cols_by_existance(df_matrix):
+    df = df_matrix.fillna(value=0)
+    df = df.astype(int)
+    print(df)
+    nonzero_mask = (df != 0).all()
+    nonzero_columns = df.columns[nonzero_mask]
+    selected_df = df[nonzero_columns]
+    print(selected_df)
+    return selected_df
