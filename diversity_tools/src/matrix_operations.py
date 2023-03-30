@@ -19,6 +19,7 @@ def convert_into_dataframe(gene_families):
     return df
 
 def get_dataframe_with_limited_families(df, family_number = 3):
+    family_number = int(family_number)
     limited_df = df.iloc[:, :family_number]
     limited_df = limited_df.fillna(value=0)
     limited_df = limited_df.astype(int)
@@ -44,7 +45,6 @@ def filter_dataframe_cols_by_value_occurrence(df_matrix, value=1, ignore_zeros=T
         df = df.loc[:, (df == value).sum() >= threshold_cutoff]
     elif mode == "less_than":
         df = df.loc[:, (df <= value).sum() <= threshold_cutoff]
-    print(df)
     return df
 
 def select_families_with_highest_number_of_genes(df_matrix, num_values):
