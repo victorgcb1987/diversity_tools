@@ -18,31 +18,33 @@ def convert_into_dataframe(gene_families):
     #df = df.T
     return df
 
-def get_dataframe_with_limited_families(df, family_number = 3):
-    family_number = int(family_number)
-    limited_df = df.iloc[:, :family_number]
-    limited_df = limited_df.fillna(value=0)
-    limited_df = limited_df.astype(int)
+def get_dataframe_with_limited_families(df, value = 3):
+    value = int(value)
+    limited_df = df.iloc[:, :value]
     return limited_df
 
 def calculate_shannon_diversity_index(df_matrix):
     cols = list(df_matrix.columns)
     df_frequencies = pd.DataFrame(df_matrix[cols].div(df_matrix[cols].sum(axis=0), axis=1))
+    np.seterr(divide = 'ignore')
     df_diversity = pd.DataFrame(df_frequencies[cols].transform(lambda x: -(x*np.log(x))))
     df_shannon = df_diversity.sum(axis=0)
     return df_shannon
 
-def filter_dataframe_cols_by_value_occurrence(df_matrix, value=1, ignore_zeros=True, threshold=1, mode = "equal"):
-    df = df_matrix.fillna(value=0)
-    df = df.astype(int)
+def filter_dataframe_cols_by_value_occurrence(df_matrix, value=1, ignore_zeros=False, threshold=1, mode = "equal"):
+    print(df_matrix, value, threshold, mode, ignore_zeros)
+    df = df_matrix
     if ignore_zeros:
-        threshold_cutoff = threshold * (df != 0).sum()
+        threshold_cutoff = threshold * len(df != 0)
     else:
-        threshold_cutoff = threshold * df.sum()
+        threshold_cutoff = threshold * len(df)
+    threshold_cutoff = round(threshold_cutoff, 1)
     if mode == "greater_than":
         df = df.loc[:, (df >= value).sum() >= threshold_cutoff]
     elif mode == "equal":
-        df = df.loc[:, (df == value).sum() >= threshold_cutoff]
+        #df = df.loc[:, (df == value).sum() >= threshold_cutoff]
+        mask = df.apply(lambda col: (col[col != 0].size / col.size) >= threshold)
+        df = df.loc[:, mask]
     elif mode == "less_than":
         df = df.loc[:, (df <= value).sum() <= threshold_cutoff]
     return df

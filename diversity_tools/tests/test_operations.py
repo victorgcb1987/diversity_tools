@@ -58,7 +58,7 @@ class  TestReaders(unittest.TestCase):
                             "CL0003": {"SP1": 1, 
                                        "SP2": 2}}
         df = convert_into_dataframe(families_matrix)
-        df = get_dataframe_with_limited_families(df, family_number = 1)
+        df = get_dataframe_with_limited_families(df, value= 1)
 
     
     def test_calculate_shannon_index(self):
@@ -77,16 +77,21 @@ class  TestReaders(unittest.TestCase):
     def test_filter_dataframe_cols_by_value_occurrence(self):
         families_matrix = {"CL0001": {"SP1": 2, 
                                       "SP2": 3, 
-                                      "SP3": 2},
+                                      "SP3": 2,
+                                      "SP4": 4, 
+                                       "SP5": 2},
                             "CL0002": {"SP1": 1, 
                                        "SP2": 2, 
                                        "SP3": 3, 
-                                       "SP4": 1, 
+                                       "SP4": 2, 
                                        "SP5": 2},
                             "CL0003": {"SP1": 1, 
-                                       "SP2": 2}}
+                                       "SP2": 1,
+                                       "SP3": 3, 
+                                       "SP4": 5, 
+                                       "SP5": 2}}
         df = convert_into_dataframe(families_matrix)
-        df = filter_dataframe_cols_by_value_occurrence(df, value= 2,ignore_zeros=True, threshold=0.2, mode="equal")
+        df = filter_dataframe_cols_by_value_occurrence(df, value= 2,ignore_zeros=False, threshold=0.3, mode="equal")
 
     def test_families_with_higher_number_of_genes(self):
         families_matrix = {"CL0001": {"SP1": 3, 

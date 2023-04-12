@@ -5,8 +5,9 @@ from pathlib import Path
 from src.matrix_readers import read_orthovenn2_composition_output
 from src.matrix_operations import (convert_list_to_numbers, convert_into_dataframe, get_dataframe_with_limited_families,
                                    filter_dataframe_cols_by_value_occurrence, select_families_with_highest_number_of_genes,
-                                   filter_dataframe_by_cols_name, filter_dataframe_by_rows_name)
+                                   filter_dataframe_by_cols_name, filter_dataframe_by_rows_name, calculate_shannon_diversity_index)
 from src.matrix_writers import write_file_from_matrix
+from src.plots import convert_diversity_matrix_to_graph
 
 def parse_arguments():
     desc = "Analysis biological features from OrthoVenn2 (.txt file) DataFrame"
@@ -48,7 +49,7 @@ def main():
 
     if not out_fdir.exists():
         out_fdir.mkdir()
-    
+
     with open(Path(options["Input_fpath"])) as fhand:
         input_list = read_orthovenn2_composition_output(fhand)
 
@@ -60,7 +61,6 @@ def main():
 
         if operation_command == "limitation":
             arguments = {}
-            print(arguments_to_parse)
             argument, value = arguments_to_parse.split(",")
             arguments[argument] = value
             arguments["df"] = df_matrix
@@ -72,36 +72,48 @@ def main():
                 argument, value = argument.split(",")
                 arguments[argument] = value
             arguments["df_matrix"] = df_matrix
-            filter_dataframe_cols_by_value_occurrence(**arguments)
-    
+            if "threshold" in arguments:
+                arguments["threshold"] = float(arguments["threshold"])
+            if "ignore_zeros" in arguments:
+                if arguments["ignore_zeros"] == "False":
+                    arguments["ignore_zeros"] = False
+                elif arguments["ignore_zeros"] == "True":
+                    arguments["ignore_zeros"] = True
+                else:
+                    raise ValueError("ignore zeros should be True or False")
+            df_matrix = filter_dataframe_cols_by_value_occurrence(**arguments)
+
         if operation_command == "Highest_value":
             arguments = {}
             for argument in arguments_to_parse:
                 argument, value = argument.split(",")
                 arguments[argument] = value
             arguments["df_matrix"] = df_matrix
-            select_families_with_highest_number_of_genes(**arguments)
-        
+            df_matrix = select_families_with_highest_number_of_genes(**arguments)
+
         if operation_command == "Cols":
             arguments = {}
             for argument in arguments_to_parse.split(";"):
                 argument, value = argument.split(",")
                 arguments[argument] = value
             arguments["df_matrix"] = df_matrix
-            filter_dataframe_by_cols_name(**arguments)
-        
+            df_matrix = filter_dataframe_by_cols_name(**arguments)
+
         if operation_command == "Rows":
             arguments = {}
             for argument in arguments_to_parse.split(";"):
                 argument, value = argument.split(",")
                 arguments[argument] = value
             arguments["df_matrix"] = df_matrix
-            filter_dataframe_by_rows_name(**arguments)
-
+            df_matrix = filter_dataframe_by_rows_name(**arguments)
+    
     out_fpath = out_fdir / "Analyzed_DataFrame.csv"
     with open(out_fpath, "w") as out_fhand:
-        write_file_from_matrix(arguments["df_matrix"], out_fhand)
-        
+        write_file_from_matrix(df_matrix, out_fhand)
+    
+    out_plot_fpath = out_fdir / "Families_Diversity_plot.svg"
+    df_to_plot = calculate_shannon_diversity_index(df_matrix)
+    convert_diversity_matrix_to_graph(df_to_plot, out_plot_fpath)
 
 if __name__ == "__main__":
     main()
