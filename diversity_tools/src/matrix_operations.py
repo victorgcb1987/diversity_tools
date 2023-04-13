@@ -32,25 +32,26 @@ def calculate_shannon_diversity_index(df_matrix):
     return df_shannon
 
 def filter_dataframe_cols_by_value_occurrence(df_matrix, value=1, ignore_zeros=False, threshold=1, mode = "equal"):
-    print(df_matrix, value, threshold, mode, ignore_zeros)
     df = df_matrix
+    value = int(value)
     if ignore_zeros:
         threshold_cutoff = threshold * len(df != 0)
     else:
         threshold_cutoff = threshold * len(df)
     threshold_cutoff = round(threshold_cutoff, 1)
     if mode == "greater_than":
-        df = df.loc[:, (df >= value).sum() >= threshold_cutoff]
+        mask = df.apply(lambda col: (col >= value).sum() > threshold_cutoff)    
+        df = df.loc[:, mask]
     elif mode == "equal":
-        #df = df.loc[:, (df == value).sum() >= threshold_cutoff]
-        mask = df.apply(lambda col: (col[col != 0].size / col.size) >= threshold)
+        mask = df.apply(lambda col: (col == value).sum() > threshold_cutoff)    
         df = df.loc[:, mask]
     elif mode == "less_than":
-        df = df.loc[:, (df <= value).sum() <= threshold_cutoff]
+        mask = df.apply(lambda col: (col <= value).sum() < threshold_cutoff)    
+        df = df.loc[:, mask]
     return df
 
-def select_families_with_highest_number_of_genes(df_matrix, num_values):
-    selected_df = df_matrix.apply(lambda x: x.nlargest(num_values, keep = 'all'))
+def select_families_with_highest_number_of_genes(df_matrix, value):
+    selected_df = df_matrix.apply(lambda x: x.nlargest(value, keep = 'all'))
     selected_df = selected_df.fillna(value=0)
     selected_df = selected_df.astype(int)
     return selected_df

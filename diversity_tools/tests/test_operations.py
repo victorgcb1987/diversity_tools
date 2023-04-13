@@ -119,8 +119,8 @@ class  TestReaders(unittest.TestCase):
                             "CL0003": {"SP1": 1, 
                                        "SP2": 2}}
         df = convert_into_dataframe(families_matrix)
-        column_list = ["CL0001","CL0003"]
-        df = filter_dataframe_by_cols_name(df, column_list, keep_columns=False)
+        column_list = "CL0002"
+        df = filter_dataframe_by_cols_name(df, column_list, keep_columns=True)
     
     def test_filter_dataframe_by_rows_name(self):
         families_matrix = {"CL0001": {"SP1": 3, 
