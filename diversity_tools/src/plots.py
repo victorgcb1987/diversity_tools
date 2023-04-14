@@ -29,5 +29,3 @@ def convert_diversity_matrix_to_graph(diversity_matrix, out_fpath):
     diversity_matrix = diversity_matrix.rename(columns={0: "Diversity"})
     sns.barplot(x="Families", y="Diversity", data=diversity_matrix, palette=("Blues_d")).set(title='Diversity of selected Families')
     plt.savefig(out_fpath)
-
-#def convert_dataframe_to_table(diversity_matrix):
