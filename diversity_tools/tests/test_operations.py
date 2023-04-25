@@ -7,7 +7,7 @@ from src.matrix_operations import (convert_list_to_numbers, convert_into_datafra
                                    calculate_shannon_diversity_index, get_dataframe_with_limited_families, 
                                    filter_dataframe_cols_by_value_occurrence, 
                                    select_families_with_highest_number_of_genes, filter_dataframe_by_cols_name,
-                                   filter_dataframe_by_rows_name)                            
+                                   filter_dataframe_by_rows_name, calculate_shannon_specificity_index)                            
 
 class  TestReaders(unittest.TestCase):
 
@@ -73,6 +73,24 @@ class  TestReaders(unittest.TestCase):
         example_diversity_df = calculate_shannon_diversity_index(df)
         assert round(example_diversity_df['Community1'], 3) == 1.746
         assert round(example_diversity_df['Community2'], 3) == 1.392
+
+    def test_calculate_specificity_index(self):
+        # example_matrix = {"Community1" : {"black": 12, "purple": 21, "striped": 5,
+        #                                   "green": 25, "brown": 2, "lblue": 17,
+        #                                   "sblue": 9}, 
+        #                   "Community2" : {"black": 10, "purple": 0, "striped": 15,
+        #                                   "green": 15, "brown": 2, "lblue": 30,
+        #                                   "sblue": 0}}
+        example_matrix = {"Community1" : {"P1": 10, "P2": 0, "P3": 0,
+                                          "P4": 0}, 
+                          "Community2" : {"P1": 0, "P2": 1, "P3": 4,
+                                          "P4": 5}, 
+                          "Community3" : {"P1": 0, "P2": 7, "P3": 3,
+                                          "P4": 0}, 
+                          "Community4" : {"P1": 0, "P2": 4, "P3": 3,
+                                          "P4": 3}}
+        df = pd.DataFrame(example_matrix)
+        example_specificity_df = calculate_shannon_specificity_index(df)
 
     def test_filter_dataframe_cols_by_value_occurrence(self):
         families_matrix = {"CL0001": {"SP1": 2, 
