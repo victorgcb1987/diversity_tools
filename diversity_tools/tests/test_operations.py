@@ -81,14 +81,14 @@ class  TestReaders(unittest.TestCase):
         #                   "Community2" : {"black": 10, "purple": 0, "striped": 15,
         #                                   "green": 15, "brown": 2, "lblue": 30,
         #                                   "sblue": 0}}
-        example_matrix = {"Community1" : {"P1": 10, "P2": 0, "P3": 0,
+        example_matrix = {"Community1" : {"P1": 1   , "P2": 0, "P3": 0,
                                           "P4": 0}, 
-                          "Community2" : {"P1": 0, "P2": 1, "P3": 4,
+                          "Community2" : {"P1": 0, "P2": 5, "P3": 0,
                                           "P4": 5}, 
-                          "Community3" : {"P1": 0, "P2": 7, "P3": 3,
-                                          "P4": 0}, 
-                          "Community4" : {"P1": 0, "P2": 4, "P3": 3,
-                                          "P4": 3}}
+                          "Community3" : {"P1": 5, "P2": 5, "P3": 5,
+                                          "P4": 5}, 
+                          "Community4" : {"P1": 2, "P2": 4, "P3": 6,
+                                          "P4": 8}}
         df = pd.DataFrame(example_matrix)
         example_specificity_df = calculate_shannon_specificity_index(df)
 

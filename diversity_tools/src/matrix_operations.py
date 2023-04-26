@@ -35,19 +35,18 @@ def calculate_shannon_specificity_index(df_matrix):
     cols = list(df_matrix.columns)
     #df_frequencies = pd.DataFrame(df_matrix[cols].div(df_matrix[cols].sum(axis=0), axis=1))
     np.seterr(divide = 'ignore')
-    print(df_matrix[cols])
     t = df_matrix[cols].shape[0]
-    print(t)
     # df_average_frequency = (1/t)*((df_frequencies.sum(axis=0)))
     # df_copy = df_frequencies[cols].divide(df_average_frequency)
-    df_average_frequency = (1/t)*((df_matrix.sum(axis=0)))
-    df_copy = df_matrix[cols].divide(df_average_frequency)
-    df_family_specificity = pd.DataFrame(df_copy[cols].transform(lambda x: (x)*np.log(x)))
-    df_family_specificity = df_family_specificity.fillna(value=0)
-    df_family_specificity = df_family_specificity / t
-    #df_family_specificity = pd.DataFrame(df_frequencies[cols].transform(lambda x: (1/t)*((x/df_average_frequency)*np.log(x/df_average_frequency))))
-    df_shannon = df_family_specificity.sum(axis=0)
+    df_average_frequency = (df_matrix.sum(axis=0)) / t
+    print(df_average_frequency) #Hasta aquí funciona bien el cálculo
+    df_divide_cal = df_matrix[cols].divide(df_average_frequency)
+    print(df_divide_cal)
+    df_family_specificity = pd.DataFrame(df_divide_cal[cols].transform(lambda x: (x)*np.log2(x)))
+    df_family_specificity = df_family_specificity.fillna(value=0).sum(axis=0)
+    df_shannon = df_family_specificity / t
     print(df_shannon)
+    #df_family_specificity = pd.DataFrame(df_frequencies[cols].transform(lambda x: (1/t)*((x/df_average_frequency)*np.log(x/df_average_frequency))))
     return df_shannon
 
 def filter_dataframe_cols_by_value_occurrence(df_matrix, value=1, ignore_zeros=False, threshold=1, mode = "equal"):
