@@ -23,30 +23,29 @@ def get_dataframe_with_limited_families(df, value = 3):
     limited_df = df.iloc[:, :value]
     return limited_df
 
-def calculate_shannon_diversity_index(df_matrix):
+def calculate_dataframe_frecuencies(df_matrix):
     cols = list(df_matrix.columns)
     df_frequencies = pd.DataFrame(df_matrix[cols].div(df_matrix[cols].sum(axis=0), axis=1))
+    print(df_frequencies)
+    return df_frequencies
+
+def calculate_shannon_diversity_index(df_frecuency_matrix):
+    cols = list(df_frecuency_matrix.columns)
     np.seterr(divide = 'ignore')
-    df_diversity = pd.DataFrame(df_frequencies[cols].transform(lambda x: -(x*np.log(x))))
+    df_diversity = pd.DataFrame(df_frecuency_matrix[cols].transform(lambda x: -(x*np.log(x))))
     df_shannon = df_diversity.sum(axis=0)
     return df_shannon
 
-def calculate_shannon_specificity_index(df_matrix):
-    cols = list(df_matrix.columns)
-    #df_frequencies = pd.DataFrame(df_matrix[cols].div(df_matrix[cols].sum(axis=0), axis=1))
+def calculate_shannon_specificity_index(df_frecuency_matrix):
+    cols = list(df_frecuency_matrix.columns)
     np.seterr(divide = 'ignore')
-    t = df_matrix[cols].shape[0]
-    # df_average_frequency = (1/t)*((df_frequencies.sum(axis=0)))
-    # df_copy = df_frequencies[cols].divide(df_average_frequency)
-    df_average_frequency = (df_matrix.sum(axis=0)) / t
-    print(df_average_frequency) #Hasta aquí funciona bien el cálculo
-    df_divide_cal = df_matrix[cols].divide(df_average_frequency)
-    print(df_divide_cal)
+    t = df_frecuency_matrix[cols].shape[0]
+    df_average_frequency = (df_frecuency_matrix.sum(axis=0)) / t
+    df_divide_cal = df_frecuency_matrix[cols].divide(df_average_frequency)
     df_family_specificity = pd.DataFrame(df_divide_cal[cols].transform(lambda x: (x)*np.log2(x)))
     df_family_specificity = df_family_specificity.fillna(value=0).sum(axis=0)
     df_shannon = df_family_specificity / t
-    print(df_shannon)
-    #df_family_specificity = pd.DataFrame(df_frequencies[cols].transform(lambda x: (1/t)*((x/df_average_frequency)*np.log(x/df_average_frequency))))
+    #print(df_shannon)
     return df_shannon
 
 def filter_dataframe_cols_by_value_occurrence(df_matrix, value=1, ignore_zeros=False, threshold=1, mode = "equal"):

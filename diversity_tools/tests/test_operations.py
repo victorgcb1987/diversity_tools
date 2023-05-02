@@ -62,11 +62,11 @@ class  TestReaders(unittest.TestCase):
 
     
     def test_calculate_shannon_index(self):
-        example_matrix = {"Community1" : {"black": 12, "purple": 21, "striped": 5,
-                                          "green": 25, "brown": 2, "lblue": 17,
-                                          "sblue": 9}, 
-                          "Community2" : {"black": 10, "purple": 0, "striped": 15,
-                                          "green": 15, "brown": 2, "lblue": 30,
+        example_matrix = {"Community1" : {"black": 0.13186, "purple": 0.23077, "striped": 0.05495,
+                                          "green": 0.27473, "brown": 0.02198, "lblue": 0.18681,
+                                          "sblue": 0.09890}, 
+                          "Community2" : {"black": 0.13889, "purple": 0, "striped": 0.20833,
+                                          "green": 0.20833, "brown": 0.02778, "lblue": 0.41667,
                                           "sblue": 0}}
         #Dos comunidades mas con diferentes diversidad
         df = pd.DataFrame(example_matrix)
@@ -75,20 +75,14 @@ class  TestReaders(unittest.TestCase):
         assert round(example_diversity_df['Community2'], 3) == 1.392
 
     def test_calculate_specificity_index(self):
-        # example_matrix = {"Community1" : {"black": 12, "purple": 21, "striped": 5,
-        #                                   "green": 25, "brown": 2, "lblue": 17,
-        #                                   "sblue": 9}, 
-        #                   "Community2" : {"black": 10, "purple": 0, "striped": 15,
-        #                                   "green": 15, "brown": 2, "lblue": 30,
-        #                                   "sblue": 0}}
-        example_matrix = {"Community1" : {"P1": 1   , "P2": 0, "P3": 0,
+        example_matrix = {"Community1" : {"P1": 1, "P2": 0, "P3": 0,
                                           "P4": 0}, 
-                          "Community2" : {"P1": 0, "P2": 5, "P3": 0,
-                                          "P4": 5}, 
-                          "Community3" : {"P1": 5, "P2": 5, "P3": 5,
-                                          "P4": 5}, 
-                          "Community4" : {"P1": 2, "P2": 4, "P3": 6,
-                                          "P4": 8}}
+                          "Community2" : {"P1": 0, "P2": 0.5, "P3": 0,
+                                          "P4": 0.5}, 
+                          "Community3" : {"P1": 0.25, "P2": 0.25, "P3": 0.25,
+                                          "P4": 0.25}, 
+                          "Community4" : {"P1": 0.1, "P2": 0.3, "P3": 0.2,
+                                          "P4": 0.4}}
         df = pd.DataFrame(example_matrix)
         example_specificity_df = calculate_shannon_specificity_index(df)
 
