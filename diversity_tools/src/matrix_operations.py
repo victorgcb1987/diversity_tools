@@ -23,10 +23,14 @@ def get_dataframe_with_limited_families(df, value = 3):
     limited_df = df.iloc[:, :value]
     return limited_df
 
-def calculate_dataframe_frecuencies(df_matrix):
+def calculate_dataframe_frecuencies_col(df_matrix):
     cols = list(df_matrix.columns)
     df_frequencies = pd.DataFrame(df_matrix[cols].div(df_matrix[cols].sum(axis=0), axis=1))
-    print(df_frequencies)
+    return df_frequencies
+
+def calculate_dataframe_frecuencies_row(df_matrix):
+    cols = list(df_matrix.columns)
+    df_frequencies = pd.DataFrame(df_matrix[cols].div(df_matrix[cols].sum(axis=1), axis=0))
     return df_frequencies
 
 def calculate_shannon_diversity_index(df_frecuency_matrix):
@@ -39,14 +43,30 @@ def calculate_shannon_diversity_index(df_frecuency_matrix):
 def calculate_shannon_specificity_index(df_frecuency_matrix):
     cols = list(df_frecuency_matrix.columns)
     np.seterr(divide = 'ignore')
+    t = df_frecuency_matrix.shape[1]
+    df_average_frequency = (df_frecuency_matrix.sum(axis=1)) / t
+    df_divide_cal = df_frecuency_matrix.div(df_average_frequency[0], axis='columns')
+    # De aqui hacia arriba funciona correctamente.
+    df_family_specificity = pd.DataFrame(df_divide_cal[cols].transform(lambda x: (x)*np.log2(x), axis = 1))
+    print(df_family_specificity)
+    df_family_specificity = df_family_specificity.fillna(value=0).sum(axis=1)
+    print(df_family_specificity)
+    df_shannon = df_family_specificity / t
+    print(df_shannon)
+    return df_shannon
+
+def calculate_shannon_specialization_index(df_frecuency_matrix):
+    cols = list(df_frecuency_matrix.columns)
+    np.seterr(divide = 'ignore')
     t = df_frecuency_matrix[cols].shape[0]
     df_average_frequency = (df_frecuency_matrix.sum(axis=0)) / t
     df_divide_cal = df_frecuency_matrix[cols].divide(df_average_frequency)
     df_family_specificity = pd.DataFrame(df_divide_cal[cols].transform(lambda x: (x)*np.log2(x)))
     df_family_specificity = df_family_specificity.fillna(value=0).sum(axis=0)
-    df_shannon = df_family_specificity / t
-    #print(df_shannon)
-    return df_shannon
+    df_shannon_specificity = df_family_specificity / t
+    df_shannon_specialization = df_frecuency_matrix[cols].mul(df_shannon_specificity)
+    df_shannon_specialization = df_shannon_specialization.sum(axis=0)
+    return df_shannon_specialization
 
 def filter_dataframe_cols_by_value_occurrence(df_matrix, value=1, ignore_zeros=False, threshold=1, mode = "equal"):
     df = df_matrix

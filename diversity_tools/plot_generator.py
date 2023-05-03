@@ -17,10 +17,10 @@ def parse_arguments():
                         help=help_Input_fpath,
                         required=True)
     
-    help_file_format = "Input file format"
-    parser.add_argument("--Format" ,
-                        "-f", type=str,
-                        help=help_file_format,
+    help_Operations = "Operations on the DataFrame: <diversity> or <specificity>"
+    parser.add_argument("--Operations" ,
+                        "-o", nargs='+',
+                        help=help_Operations,
                         required=True)
     
     help_out_fdir = "Output folder"
@@ -34,15 +34,15 @@ def get_options():
     parser = parse_arguments()  
     options = parser.parse_args()
     Input_fpath = Path(options.iFile)
-    fileFormat = options.Format
+    operations = options.Operations
     output_fdir = Path(options.out)
     return {"Input_fpath" : Input_fpath,
-            "fileFormat": fileFormat,
+            "operations": operations,
             "out_fdir": output_fdir}
 
 def main():
     options = get_options()
-    format = options["fileFormat"]
+    operations = options["operations"]
     out_fdir = options["out_fdir"]
 
     main_fdir = Path("C:/Users/aleja/OneDrive - UPV/Documentos/Trabajo_Fin_de_Grado/results_folder")
@@ -51,25 +51,23 @@ def main():
     if not dir_path.exists():
         dir_path.mkdir()
 
-    if format == "ov":
-        with open(Path(options["Input_fpath"])) as fhand:
-            file_output = read_orthovenn2_composition_output(fhand)
-            List_to_numbers = convert_list_to_numbers(file_output)
+    with open(Path(options["Input_fpath"])) as fhand:
+            dataframe = read_matrix_from_file(fhand, family_field="#ID")
+            df_matrix = convert_into_dataframe(dataframe)
+            df_matrix = df_matrix.T
 
-    if format == "csv":
-        with open(Path(options["Input_fpath"])) as fhand:
-            List_to_numbers = read_matrix_from_file(fhand, family_field="#ID")
+    print(df_matrix)
 
-    df_matrix = convert_into_dataframe(List_to_numbers)
-    df_matrix = df_matrix.T
-    Diversity_df = calculate_shannon_diversity_index(df_matrix)
+    for operation in operations:
+        if operation == "diversity":
+            out_plot_fpath = dir_path / "Diversity_Analyzed_DataFrame.svg"
+            convert_diversity_matrix_to_graph(df_matrix, out_plot_fpath)
+            message += f"Has been applied the shannon diversity index to the dataframe"
 
-    out_plot_fpath = dir_path / "Diversity_DataFrame.svg"
-    convert_diversity_matrix_to_graph(Diversity_df, out_plot_fpath)
-
-    out_fpath = dir_path / "Diversity_DataFrame.csv"
-    with open(out_fpath, "w") as out_fhand:
-        write_csv_from_matrix(Diversity_df, out_fhand)
+        if operation == "specificity":
+            out_plot_fpath = dir_path / "Specificity_Specificity_Analyzed_DataFrameDataFrame.svg"
+            convert_diversity_matrix_to_graph(df_matrix, out_plot_fpath)
+            message += f"Has been applied the shannon diversity index to the dataframe"
 
 
 if __name__ == "__main__":

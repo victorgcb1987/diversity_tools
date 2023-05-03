@@ -5,7 +5,8 @@ from sys import argv
 
 from src.matrix_readers import read_matrix_from_file
 from src.matrix_operations import (convert_into_dataframe, calculate_shannon_diversity_index, 
-                                   calculate_shannon_specificity_index, calculate_dataframe_frecuencies)
+                                   calculate_shannon_specificity_index, calculate_dataframe_frecuencies,
+                                   calculate_shannon_specialization_index)
 from src.matrix_writers import write_csv_from_matrix
 from src.plots import convert_diversity_matrix_to_graph
 
@@ -61,21 +62,27 @@ def main():
 
     df_matrix = convert_into_dataframe(List_to_numbers)
     df_matrix = df_matrix.T
-    print(df_matrix)
     message = ""
 
     for operation in operations:
         if operation == "diversity":
             frecuency_df = calculate_dataframe_frecuencies(df_matrix)
             Diversity_df = calculate_shannon_diversity_index(frecuency_df)
-            message += f"Has been applied the shannon diversity index to the dataframe"
+            out_fpath = dir_path / "Diversity_Shannon_index.csv"
+            message += f"An operation has been performed on a dataframe and the diversity of the Shannon index has been calculated"
 
         if operation == "specificity":
             frecuency_df = calculate_dataframe_frecuencies(df_matrix)
             Diversity_df = calculate_shannon_specificity_index(frecuency_df)
-            message += f"Has been applied the shannon diversity index to the dataframe"
+            out_fpath = dir_path / "Specificity_Shannon_index.csv"
+            message += f"An operation has been performed on a dataframe and the specificity of the Shannon index has been calculated"
 
-    out_fpath = dir_path / "Shannon_index_DataFrame.csv"
+        if operation == "specialization":
+            frecuency_df = calculate_dataframe_frecuencies(df_matrix)
+            Diversity_df = calculate_shannon_specialization_index(frecuency_df)
+            out_fpath = dir_path / "Specialization_Shannon_index.csv"
+            message += f"An operation has been performed on a dataframe and the specialization of the Shannon index has been calculated"
+
     with open(out_fpath, "w") as out_fhand:
         write_csv_from_matrix(Diversity_df, out_fhand)
 
