@@ -24,6 +24,6 @@ def read_matrix_from_file(gene_families_orthovenn2_Read_input_fhand, family_fiel
         family_name = line.pop(family_field)
         families_matrix[family_name] = line
         for species_names, gene_count in line.items():
-                    families_matrix[family_name][species_names] = int(gene_count)
+                    families_matrix[family_name][species_names] = float(gene_count)
     return families_matrix
      

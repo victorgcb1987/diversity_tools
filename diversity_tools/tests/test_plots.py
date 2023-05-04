@@ -13,16 +13,16 @@ class  TestReaders(unittest.TestCase):
     def setUp(self):
         self.test_path = Path(__file__).parent.absolute() / "test_data"
 
-    def tearDown(self):
-        remove_file(self.test_path/ "Families_Diversity_plot.svg")
+    #def tearDown(self):
+    #    remove_file(self.test_path/ "Families_Diversity_plot.svg")
 
     def test_seaborn(self):
         fpath = self.test_path / "Families_Diversity_plot.svg"
-        example_matrix = {"Community1" : {"black": 12, "purple": 21, "striped": 5,
-                                          "green": 25, "brown": 2, "lblue": 17,
-                                          "sblue": 9}, 
-                          "Community2" : {"black": 10, "purple": 0, "striped": 15,
-                                          "green": 15, "brown": 2, "lblue": 30,
+        example_matrix = {"Community1" : {"black": 0.13186, "purple": 0.23077, "striped": 0.05495,
+                                          "green": 0.27473, "brown": 0.02198, "lblue": 0.18681,
+                                          "sblue": 0.09890}, 
+                          "Community2" : {"black": 0.13889, "purple": 0, "striped": 0.20833,
+                                          "green": 0.20833, "brown": 0.02778, "lblue": 0.41667,
                                           "sblue": 0}}
         df = pd.DataFrame(example_matrix)
         example_diversity_df = calculate_shannon_diversity_index(df)

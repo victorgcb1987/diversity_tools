@@ -29,3 +29,10 @@ def convert_diversity_matrix_to_graph(diversity_matrix, out_fpath):
     diversity_matrix = diversity_matrix.rename(columns={0: "Diversity"})
     sns.barplot(x="Families", y="Diversity", data=diversity_matrix, palette=("Blues_d")).set(title='Diversity of selected Families')
     plt.savefig(out_fpath)
+
+def convert_specialization_matrix_to_graph(specialization_matrix, out_fpath):
+    specialization_matrix = specialization_matrix.to_frame()
+    specialization_matrix["Families"] = specialization_matrix.index
+    specialization_matrix = specialization_matrix.rename(columns={0: "Diversity"})
+    sns.barplot(x="Families", y="Specialization", data=specialization_matrix, palette=("Blues_d")).set(title='Specialization of selected Families')
+    plt.savefig(out_fpath)
