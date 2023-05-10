@@ -3,8 +3,8 @@ import argparse
 from pathlib import Path
 from sys import argv
 
-from src.matrix_readers import read_orthovenn2_composition_output, read_matrix_from_file
-from src.matrix_operations import convert_list_to_numbers, convert_into_dataframe, calculate_shannon_diversity_index
+from src.matrix_readers import read_matrix_from_file
+from src.matrix_operations import convert_into_dataframe
 from src.plots import convert_diversity_matrix_to_graph, convert_specialization_matrix_to_graph, convert_dataframe_to_scatter
 
 def parse_arguments():
@@ -12,13 +12,19 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description=desc)
 
     help_Input_fpath = "Input file"
-    parser.add_argument("--iFile" ,
+    parser.add_argument("--input_file" ,
                         "-i", type=str,
                         help=help_Input_fpath,
                         required=True)
     
+    help_Input_fpath = "Input file2"
+    parser.add_argument("--input_file2" ,
+                        "-i2", type=str,
+                        help=help_Input_fpath,
+                        required=False, default=False)
+    
     help_Operations = "Operations on the DataFrame: <diversity> / <specialization> / <both>"
-    parser.add_argument("--Operations" ,
+    parser.add_argument("--operations" ,
                         "-o", nargs='+',
                         help=help_Operations,
                         required=True)
@@ -33,10 +39,15 @@ def parse_arguments():
 def get_options():
     parser = parse_arguments()  
     options = parser.parse_args()
-    Input_fpath = Path(options.iFile)
-    operations = options.Operations
+    input_fpath = Path(options.input_file)
+    if options.input_file2:
+        input_fpath2 = Path(options.input_file2)
+    else:
+        input_fpath2 = False
+    operations = options.operations
     output_fdir = Path(options.out)
-    return {"Input_fpath" : Input_fpath,
+    return {"input_fpath" : input_fpath,
+            "input_fpath2": input_fpath2,
             "operations": operations,
             "out_fdir": output_fdir}
 
@@ -51,19 +62,15 @@ def main():
     if not dir_path.exists():
         dir_path.mkdir()
 
-    with open(Path(options["Input_fpath"])) as fhand:
-            if operations == "scatter":
-                diversity_df, Specialization_df = fhand.split("-")
-                diversity_df = read_matrix_from_file(diversity_df, family_field="#ID")
-                diversity_df = convert_into_dataframe(diversity_df)
-                diversity_df = diversity_df.T
-                Specialization_df = read_matrix_from_file(Specialization_df, family_field="#ID")
-                Specialization_df = convert_into_dataframe(Specialization_df)
-                diversity_df = diversity_df.T
-            else: 
-                dataframe = read_matrix_from_file(fhand, family_field="#ID")
-                df_matrix = convert_into_dataframe(dataframe)
-                df_matrix = df_matrix.T
+    with open(Path(options["input_fpath"])) as fhand:
+            dataframe = read_matrix_from_file(fhand, family_field="#ID")
+            df_matrix = convert_into_dataframe(dataframe)
+            df_matrix = df_matrix.T
+            if options["input_fpath2"]:
+                with open(Path(options["input_fpath2"])) as fhand2:
+                    dataframe2 = read_matrix_from_file(fhand2, family_field="#ID")
+                    df_matrix2 = convert_into_dataframe(dataframe2)
+                    df_matrix2 = df_matrix2.T
 
     message = ""
 
@@ -79,8 +86,8 @@ def main():
             message += "\n" + f"Has been applied the shannon diversity index to the dataframe"
 
         if operation == "scatter":
-            out_plot_fpath = dir_path / "Diversity_Specialization_ScatterPlot.svg"
-            convert_dataframe_to_scatter(diversity_df, Specialization_df, out_plot_fpath)
+            out_plot_fpath = dir_path / "Diversity_Specialization_DataFrame.svg"
+            convert_dataframe_to_scatter(df_matrix, df_matrix2, out_plot_fpath)
             message += "\n" + f"Has been applied the shannon diversity index to the dataframe"
 
 

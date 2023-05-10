@@ -34,12 +34,10 @@ def calculate_dataframe_frecuencies_row(df_matrix):
     return df_frequencies
 
 def calculate_shannon_diversity_index(df_frecuency_matrix):
-    print(df_frecuency_matrix)
     cols = list(df_frecuency_matrix.columns)
     np.seterr(divide = 'ignore')
     df_diversity = pd.DataFrame(df_frecuency_matrix[cols].transform(lambda x: -(x*np.log2(x))))
     df_shannon = df_diversity.sum(axis=0)
-    print(df_shannon)
     return df_shannon
 
 def calculate_shannon_specificity_index(df_frecuency_matrix):

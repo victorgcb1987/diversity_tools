@@ -36,8 +36,14 @@ def convert_specialization_matrix_to_graph(specialization_matrix, out_fpath):
     sns.barplot(x="Families", y="Specialization", data=specialization_matrix, palette=("Blues_d")).set(title='Specialization of selected Families')
     plt.savefig(out_fpath)
 
-def convert_dataframe_to_scatter(diversity_matrix, specialization_matriz, out_fpath):
+def convert_dataframe_to_scatter(diversity_matrix, specialization_matrix, out_fpath):
     diversity_matrix = diversity_matrix.rename(columns={'0': "Diversity"})
     specialization_matrix = specialization_matrix.rename(columns={'0': "Specialization"})
-    scatter_matrix = pd.concat([diversity_matrix, specialization_matriz], axis = 1)
-    sns.jointplot(x = scatter_matrix['Diversity'], y = scatter_matrix['Specialization'], palette=("Blues_d"), kind = 'scatter')
+    scatter_matrix = pd.concat([diversity_matrix, specialization_matrix], axis = 1)
+    print(scatter_matrix)
+    sns.scatterplot(x = scatter_matrix['Diversity'], y = scatter_matrix['Specialization'], palette=("Blues_d"), hue=scatter_matrix.index)
+    plt.table(cellText=scatter_matrix.values,
+                  rowLabels=scatter_matrix.index,
+                  colLabels=scatter_matrix.columns,
+                  bbox=(1.5, .2, 0.5, 0.5))
+    plt.savefig(out_fpath)
