@@ -78,17 +78,17 @@ def main():
         if operation == "diversity":
             out_plot_fpath = dir_path / "Diversity_Analyzed_DataFrame.svg"
             convert_diversity_matrix_to_graph(df_matrix, out_plot_fpath)
-            message += "\n" + f"Has been applied the shannon diversity index to the dataframe"
+            message += "\n" + f"Has been applied a Barplot conversion from the shannon diversity index."
 
         if operation == "specialization":
             out_plot_fpath = dir_path / "Specialization_Analyzed_DataFrame.svg"
             convert_specialization_matrix_to_graph(df_matrix, out_plot_fpath)
-            message += "\n" + f"Has been applied the shannon diversity index to the dataframe"
+            message += "\n" + f"Has been applied a Barplot conversion from the shannon specialization index."
 
         if operation == "scatter":
             out_plot_fpath = dir_path / "Diversity_Specialization_DataFrame.svg"
             convert_dataframe_to_scatter(df_matrix, df_matrix2, out_plot_fpath)
-            message += "\n" + f"Has been applied the shannon diversity index to the dataframe"
+            message += "\n" + f"Has been applied a scatter_plot conversion of the shannon diversity and specialization index."
 
 
     run_log_fpath = dir_path / "run.log.txt"
