@@ -160,7 +160,6 @@ def main():
     with open(run_log_fpath, "w") as log_fhand:
         log_fhand.write("\t".join(argv))
         log_fhand.write(message)
-
-
+    print(df_matrix)
 if __name__ == "__main__":
     main()
