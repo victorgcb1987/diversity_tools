@@ -2,15 +2,15 @@ import argparse
 from pathlib import Path
 
 
-from src.create_matrix import (create_df_from_parsed_input,
+from src.matrix_operations import (create_df_from_parsed_input,
                                create_te_count_matrix,
                                count_tes, filter_df_by_chromosomes,
                                filter_df_by_domain,
                                filter_df_by_length,
                                filter_df_by_percentages) 
-from src.read_input import (merge_inputs, read_repeatmasker_out,
+from src.matrix_readers import (merge_inputs, read_repeatmasker_out,
                             read_tesorter_cls_tsv)
-from src.utils import (convert_data_to_long_df_div,
+from src.general_utils import (convert_data_to_long_df_div,
                        read_chroms_file, read_doms_file,
                        read_names_file)
 
