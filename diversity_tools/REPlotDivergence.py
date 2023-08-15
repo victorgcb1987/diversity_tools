@@ -1,8 +1,8 @@
 import argparse
 from pathlib import Path
 
-from src.generate_plots import get_divergence_violins
-from src.utils import get_large_dfs
+from src.plots import get_divergence_violins
+from src.general_utils import get_large_dfs
 
 def argument_parser():
     desc = """Generates plots based on RECollector's species
