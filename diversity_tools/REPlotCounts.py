@@ -1,9 +1,9 @@
 import argparse
 from pathlib import Path
 
-from src.generate_plots import (get_count_matrix_heatmap,
+from src.plots import (get_count_matrix_heatmap,
                                 get_count_matrix_pca)
-from src.utils import read_names_file, get_large_dfs
+from src.general_utils import read_names_file, get_large_dfs
 
 def argument_parser():
     desc = """Generates plots based on RECollector's TE count
