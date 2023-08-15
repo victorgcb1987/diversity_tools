@@ -1,15 +1,21 @@
 from matplotlib_venn import venn2, venn3
 
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.style as style
+from ete3 import Tree, NodeStyle
 from matplotlib.gridspec import GridSpec
+from matplotlib.patches import Patch
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 
 style.available
 style.use('ggplot')
 
 from src.kmers import get_kmer_sets
+from .plot_eteTree import plot_tree
 
 def venn_diagram_of_kmers(grouped_kmers, percentages=True):
     sets, groups = get_kmer_sets(grouped_kmers)
