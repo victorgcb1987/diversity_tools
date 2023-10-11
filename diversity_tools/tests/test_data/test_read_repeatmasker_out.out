@@ -1,0 +1,6 @@
+    SW   perc perc perc  query        position in query                 matching           repeat                position in repeat
+ score   div. del. ins.  sequence     begin     end            (left)   repeat             class/family      begin   end    (left)       ID
+
+ 25785   14.7  2.1  2.4  Peame105C00         23      4959  (55849342) + rnd-4_family-1935  Unknown                 1   4924     (0)       1  
+   434   31.9  5.0  5.0  Peame105C00       4959      5519  (55848782) C ltr-1_family-724   LTR/Copia          (2165)   6492    5932       2 *
+   225   32.2  4.6  4.6  Peame105C00       5630      5847  (55848454) C ltr-1_family-645   LTR/Copia           (746)   3334    3117       3  
