@@ -47,8 +47,7 @@ def main():
     operations = options["operations"]
     out_fdir = options["out_fdir"]
 
-    main_fdir = Path("C:/Users/aleja/OneDrive - UPV/Documentos/Trabajo_Fin_de_Grado/results_folder")
-    dir_path = main_fdir /  out_fdir
+    dir_path = Path(out_fdir)
 
     if not dir_path.exists():
         dir_path.mkdir()
