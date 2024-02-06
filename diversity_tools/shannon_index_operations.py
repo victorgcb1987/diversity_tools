@@ -66,19 +66,23 @@ def main():
             out_fpath = dir_path / "Diversity_Shannon_index.csv"
             message = "\n" + f"An operation has been performed on a dataframe and the diversity of the Shannon index has been calculated."
 
-        if operation == "specificity":
+        elif operation == "specificity":
             frecuency_df = calculate_dataframe_frecuencies_row(df_matrix)
             Shannon_index_df = calculate_shannon_specificity_index(frecuency_df)
             out_fpath = dir_path / "Specificity_Shannon_index.csv"
             message = "\n" + f"An operation has been performed on a dataframe and the specificity of the Shannon index has been calculated."
 
-        if operation == "specialization":
+        elif operation == "specialization":
             frecuency_rows_df = calculate_dataframe_frecuencies_row(df_matrix)
             specificity_df = calculate_shannon_specificity_index(frecuency_rows_df)
             frecuency_Cols_df = calculate_dataframe_frecuencies_col(df_matrix)
             Shannon_index_df = calculate_shannon_specialization_index(frecuency_Cols_df, specificity_df)
             out_fpath = dir_path / "Specialization_Shannon_index.csv"
             message = "\n" + f"An operation has been performed on a dataframe and the specialization of the Shannon index has been calculated."
+
+        else:
+            raise ValueError("Function doesnt exist: {}".format(operation))
+
 
     with open(out_fpath, "w") as out_fhand:
         write_csv_from_matrix(Shannon_index_df, out_fhand)
