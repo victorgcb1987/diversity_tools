@@ -9,6 +9,7 @@ import matplotlib.style as style
 from ete3 import Tree, NodeStyle
 from matplotlib.gridspec import GridSpec
 from matplotlib.patches import Patch
+from scipy.stats import zscore
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
@@ -63,7 +64,7 @@ def convert_dataframe_to_scatter(diversity_matrix, specialization_matrix, out_fp
     plt.subplots_adjust(wspace=0.3)
     plt.savefig(out_fpath)
 
-def get_count_matrix_heatmap(matrix_df, out_file, group_dict, dendro=False):
+def get_count_matrix_heatmap(matrix_df, out_file, group_dict, hsize, dendro=False):
     """Generate heatmap from TE count matrix.
     
     Parameters
@@ -72,12 +73,15 @@ def get_count_matrix_heatmap(matrix_df, out_file, group_dict, dendro=False):
         DataFrame in wide form, where columns are the different
         subcategories of the chosen category, and rows are species.
     
-    out_file : output file
+    out_file : output file path
 
     group_dict : dictionary
         Contains the groups defined by the user. Keys: species;
         values: group.
-    
+
+    hsize : tuple (width, height)
+        Size of the figure in inches
+
     dendro: bool, default: False
         If True, the generated heatmap will contain a dendrogram
         for the species (rows).
@@ -85,25 +89,38 @@ def get_count_matrix_heatmap(matrix_df, out_file, group_dict, dendro=False):
     #Create colors for the groups and the legend
     group_df = matrix_df.index.map(group_dict)
     groups = group_df.unique()
-    group_pal = sns.color_palette("YlOrBr", len(groups))
+    group_pal = sns.color_palette("hls", len(groups))
     group_lut = dict(zip(groups, group_pal))
     group_colors = group_df.map(group_lut)
 
     #Heatmap creation with previous standardization
-    cm_heat = sns.clustermap(matrix_df, z_score=1,
-                             cmap="mako", col_cluster=False,
+    standard_matrix = matrix_df.apply(lambda col: zscore(col) if col.std() != 0 else col, axis=0)
+    cm_heat = sns.clustermap(standard_matrix,
+                             cmap="magma_r", col_cluster=True,
                              row_colors=group_colors,
-                             row_cluster=dendro)
-    
+                             row_cluster=dendro, figsize=hsize,
+                             cbar_kws={"orientation":"horizontal"}, vmin=0)
+    cm_heat.ax_col_dendrogram.set_visible(False)
+    dendro_box = cm_heat.ax_col_dendrogram.get_position()
+    dendro_box.y0 = dendro_box.y0 + 0.02
+    dendro_box.y1 = dendro_box.y0 + 0.02
+    cm_heat.cax.set_position(dendro_box)
+
     #Add legend
     handles = [Patch(facecolor=group_lut[name]) for name in group_lut]
+    fontsize_scaled = math.ceil(hsize[1])
+    legend_box = cm_heat.ax_col_dendrogram.get_position()
+    yper = 1.5/hsize[1]
+    legend_box.y0 = dendro_box.y1 + yper
+    legend_box.y1 = legend_box.y0 + 0.08
     plt.legend(handles, group_lut, title='Groups',
-               bbox_to_anchor=(0.5, 1),
+               bbox_to_anchor=legend_box,
                ncol=math.ceil(len(handles)/4),
                bbox_transform=plt.gcf().transFigure,
-               loc='upper center')
-    
-    cm_heat.savefig(out_file, dpi=300)
+               loc='upper center', title_fontsize=fontsize_scaled,
+               fontsize=fontsize_scaled)
+    cm_heat.ax_heatmap.set_xlabel("")
+    cm_heat.savefig(out_file, dpi=200)
 
 def get_count_matrix_pca(matrix_df, out_file, group_dict, show_names=False):
     """Generate PCA plot from TE count matrix.
@@ -114,7 +131,7 @@ def get_count_matrix_pca(matrix_df, out_file, group_dict, show_names=False):
         DataFrame in wide form, where columns are the different
         subcategories of the chosen category, and rows are species.
 
-    out_file : output file
+    out_file : output file path
 
     group_dict : dictionary
         Contains the groups defined by the user. Keys: species;
@@ -123,7 +140,6 @@ def get_count_matrix_pca(matrix_df, out_file, group_dict, show_names=False):
     show_names : bool, default: False
         If True, the generated plot will show the name of each point.
     """
-    style.use("default")
     #Standardization of data and 2-component PCA creation
     scaled_matrix = StandardScaler().fit_transform(matrix_df)
 
@@ -139,11 +155,12 @@ def get_count_matrix_pca(matrix_df, out_file, group_dict, show_names=False):
     pca_df["group"] = pca_df.index.map(group_dict)
 
     #Plotting the results
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(6.4, 6.4))
     sns.scatterplot(data=pca_df, x=pca_df.PC1, y=pca_df.PC2,
                     hue="group", ax=ax)
-    ax.legend(loc= "center left", title="Groups",
-              bbox_to_anchor=(1.1,0.5))
+    ax.legend(loc="center left", title="Groups",
+              fontsize=8,
+              bbox_to_anchor=(1, 0.5))
     ax.set_xlabel(f"PC1 ({per_var[0]}%)")
     ax.set_ylabel(f"PC2 ({per_var[1]}%)")
 
@@ -173,6 +190,70 @@ def get_count_matrix_pca(matrix_df, out_file, group_dict, show_names=False):
     fig.tight_layout()
     fig.savefig(out_file, dpi=300)
 
+def get_divergence_boxplots(div_file, species_and_groups, out_fpath):
+    """Generate a box plot from a given category from RECollector divergence data.
+
+    Parameters
+    ----------
+    div_file : path to the RECollector divergence file
+
+    species_and_groups : dictionary
+        Contains the groups defined by the user. Keys: species;
+        values: group.
+
+    out_fpath : output file path
+    """
+    sp_per_group = {}
+    for k, v in species_and_groups.items():
+        if v in sp_per_group:
+            sp_per_group[v].append(k)
+        else:
+            sp_per_group[v] = [k]
+    ordered_sp = [sp for val in sp_per_group.values() for sp in val]
+
+    with open(div_file) as file:
+        div_df = get_large_dfs(file)
+        cat_name = div_df.columns[1]
+        cat = list(div_df[cat_name].unique())[0]
+        div_df["group"] = div_df["species"].apply(lambda x: species_and_groups[x]).astype("category")
+        print(f"Read data for {cat} divergence")
+    
+    #Check if some species is not in the dataframe
+    sp_in_df = list(div_df["species"].unique())    
+    for species in ordered_sp:
+        #Add blank data if not present
+        if species not in sp_in_df:
+            empty_df = pd.DataFrame({"species": [species],
+                                        cat_name: cat, "per div": 0.0})
+            div_df = pd.concat([div_df, empty_df])
+
+    #Modify plot aspect given the number of species
+    data_length = len(ordered_sp)
+    if data_length <= 10:
+        plot_aspect = 2
+    elif data_length > 10 and data_length <= 25:
+        plot_aspect = 3
+    elif data_length > 25 and data_length <= 50:
+        plot_aspect = 3.5
+    elif data_length > 50 and data_length <= 75:
+        plot_aspect = 4
+    else:
+        plot_aspect = 5
+
+    b_plot = sns.catplot(data=div_df, x="species",
+                         y="per div", hue="group",
+                         kind="box", aspect=plot_aspect, order=ordered_sp,
+                         hue_order=list(sp_per_group.keys()),
+                         dodge=False, sharex=True)
+    b_plot.set_xticklabels(rotation=90)
+    sns.despine(bottom=True)
+    b_plot.set(title=f"Divergence data for {cat}", 
+               ylabel="% Divergence", xlabel="",
+               axisbelow=True)
+    b_plot.legend.set(title="Groups")
+    b_plot.ax.yaxis.grid()
+    b_plot.savefig(out_fpath, dpi=200)
+
 def get_divergence_violins(files_list, tree_fpath, analyzed_species, out_file):
     """Generate violin plots given a long-form DataFrame.
 
@@ -192,7 +273,7 @@ def get_divergence_violins(files_list, tree_fpath, analyzed_species, out_file):
     analyzed_species: list
         List containing the names of the species to analyze
     
-    out_file : output file
+    out_file : output file path
     """
 
     #No tree file provided
@@ -260,7 +341,7 @@ def get_divergence_violins(files_list, tree_fpath, analyzed_species, out_file):
         for ax in axs[ax_count:]:
             fig.delaxes(ax)
         # fig.set_size_inches(len(ax_count)*2, height*4)
-        fig.savefig(out_file, bbox_inches="tight", dpi=300)
+        fig.savefig(out_file, bbox_inches="tight", dpi=200)
 
     #Tree file provided
     else:
@@ -336,4 +417,4 @@ def get_divergence_violins(files_list, tree_fpath, analyzed_species, out_file):
         _ = ax1.set_xlim(xmin, xmax)
         _ = ax1.set_ylim(ymin, ymax)
 
-        fig.savefig(out_file, dpi=300)
+        fig.savefig(out_file, dpi=200)
