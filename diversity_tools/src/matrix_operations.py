@@ -100,7 +100,7 @@ def filter_dataframe_by_rows_name(df_matrix, row_name_list, keep_row=True):
         df = df.drop(row_name_list, axis = 0)
     return df
 
-def count_tes(input_df, species_name, col="superfamily", override=False):
+def count_tes(input_df, species_name, col="superfamily"):
     """Counts each element of the selected column.
 
     Parameters
@@ -114,12 +114,6 @@ def count_tes(input_df, species_name, col="superfamily", override=False):
 
     col : str, default: 'superfamily'
         Column that will be selected and counted.
-
-    override : bool, default: False
-        Select to override 'Unknown' values of the 'superfamily'
-        and 'class' columns with their correspondent values
-        in 'tes superfamily' and 'tes order', respectively.
-        Only works with said columns.
         
     Returns
     -------
@@ -133,23 +127,12 @@ def count_tes(input_df, species_name, col="superfamily", override=False):
     if col == "domains":
         input_df["domains"] = input_df['domains'].apply(lambda x: ','.join(map(str, x)))
 
-    elif col in ("superfamily", "class") and override:
-        if col == "superfamily":
-            tesorter_to_repmask = {"MuDR_Mutator": "MULE-MuDR", "PIF_Harbinger": "PIF-Harbinger"}
-        else:
-            tesorter_to_repmask = {"TIR": "DNA"}
-        target_col_values = input_df[col] == "Unknown"
-        copy_col = "tes superfamily" if col == "superfamily" else "tes order"
-        input_df[col] = input_df[col].astype("object")
-        input_df.loc[target_col_values, col] = input_df.loc[target_col_values, copy_col]
-        input_df[col] = input_df[col].astype("category")
-        input_df[col] = input_df[col].replace(tesorter_to_repmask)
-
     counted_tes = input_df.value_counts(col).rename(species_name).astype("int32")
     return counted_tes
 
 def create_te_count_matrix(list_of_inputs):
     """Combines the series from count_tes() into a dataframe.
+    
 
     Parameters
     ----------
@@ -169,35 +152,6 @@ def create_te_count_matrix(list_of_inputs):
         te_count_matrix = pd.concat([te_count_matrix, input], axis=1)
     te_count_matrix = te_count_matrix.fillna(0).astype("int32")
     return te_count_matrix
-
-def filter_df_by_chromosomes(df_to_filter, chromosomes, exclude=False):
-    """Filters a dataframe based on a list of chromosomes.
-    
-    Parameters
-    ----------
-    df_to_filter : `pandas.DataFrame`
-        Dataframe containing a column that specifies the chromosome
-        of each row.
-
-    chromosomes : list
-        List of chromosomes to filter.
-
-    exclude : bool, default: False
-        If True, the dataframe will be filtered to not contain
-        the specified chromosomes.
-
-    Returns
-    -------
-    filtered_df : `pandas.DataFrame`
-        Dataframe containing (or excluding) the specified chromosomes.
-    """
-    if exclude:
-        filtered_df = df_to_filter[~df_to_filter.seqid.apply(lambda x: x in chromosomes)]
-
-    else:
-        filtered_df = df_to_filter[df_to_filter.seqid.apply(lambda x: x in chromosomes)]
-
-    return filtered_df
 
 def filter_df_by_domain(df_to_filter, doms, clades, special_features):
     """Filters a dataframe to remove repeats that do not contain data on their domains.
