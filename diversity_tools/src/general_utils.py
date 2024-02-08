@@ -21,7 +21,7 @@ def store_results(out_fpath, run_results):
 
 def convert_data_to_long_df_div(species_df, species, depth):
     """Convert divergence data of RECollector to a long-form DataFrame.
-    
+
     Parameters
     ----------
     species_df : `pandas.DataFrame`
@@ -44,17 +44,17 @@ def convert_data_to_long_df_div(species_df, species, depth):
     #Create new column for species
     sp_df.insert(0, "species", species)
     selected_columns = ["species", depth, "per div"]
-    
+
     #Select columns and their datatypes
     convert_dict = {"species": "category", depth: "category",
                     "per div": "float16"}
     long_df_div = sp_df.loc[:, selected_columns].astype(convert_dict)
-        
+
     return long_df_div
 
 def get_large_dfs(file, exclude=False, transpose=False):
     """Creates DataFrame from large files.
-    
+
     Used for RECollector's outputs.
 
     Parameters
@@ -85,9 +85,9 @@ def get_large_dfs(file, exclude=False, transpose=False):
             chunk = chunk.astype({species: "category",
                                     cat_name: "category",
                                     per_div: "float16"})
-            
+
             chunk_list.append(chunk)
-            
+
         df_concat = pd.concat(chunk_list).astype({species: "category",
                                     cat_name: "category",
                                     per_div: "float16"})
@@ -100,42 +100,19 @@ def get_large_dfs(file, exclude=False, transpose=False):
 
         if exclude and transpose:
                 te_count_df = te_count_df.T
-                excluded = ["Unknown", "none", "{'none':'none'}"]
+                excluded = ["Artifact", "Other", "Accidental", "Low_complexity",
+                            "Simple_repeat", "Normally_Non-integrating_Virus",
+                            "Pseudogene", "RNA", "rRNA", "Tandem_repeat",
+                            "Satellite", "Acromeric", "Centromeric", "Macro",
+                            "Subtelomeric", "W-chromosomal", "Y-chromosomal",
+                            "scRNA", "Segmental_Duplication", "Simple", "snRNA",
+                            "tRNA", "DFAM-Unknown_Centromeric", "Unknown"]
                 te_count_df = te_count_df.drop(columns=excluded, errors="ignore")
-            
+
         elif not exclude and transpose:
             te_count_df = te_count_df.T
 
         return te_count_df
-
-def read_chroms_file(chr_file):
-    """Reads the file for chromosome filtering.
-    
-    Used for RECollector's chromosome filtering step.
-
-    Parameters
-    ----------
-    chr_file : file
-        File containing data to filter by chromosomes.
-        Each row corresponds to a given species: the name
-        of the species must first provided followed by
-        its specified chromosomes, separated by a tab.
-        For several chromosomes, they must separated by
-        commas.
-    
-    Returns
-    -------
-    chrs_to_filter : dict
-        Keys correspond to the names of the species, whereas
-        values consist of a list of the selected chromosomes.
-    """
-    chrs_to_filter = {}
-    for species_chrom in chr_file:
-        species_chrom = species_chrom.strip("\n").split("\t")
-        sp_name = species_chrom[0]
-        chrs = species_chrom[1].split(",")
-        chrs_to_filter[sp_name] = chrs
-    return chrs_to_filter
 
 def read_doms_file(doms_file):
     """Reads the file for domain filtering
